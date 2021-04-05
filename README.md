@@ -86,3 +86,12 @@ The code given is structured as follows. Feel free however to modify the structu
 * [Sqlite3](https://sqlite.org/index.html) - Database storage engine
 
 Happy hacking 😁!
+
+# Resolution
+## Step by Step (https://www.youtube.com/watch?v=ay6GjmiJTPM)
+###Apr 5
+
+1. Download & Install IntelliJ Idea Community
+2. Fork Project
+3. Open & Run project
+4. Play with REST API
