@@ -19,8 +19,9 @@ private val logger = KotlinLogging.logger {}
 private val thisFile: () -> Unit = {}
 
 class AntaeusRest(
-    private val invoiceService: InvoiceService,
-    private val customerService: CustomerService,
+        private val invoiceService: InvoiceService,
+        private val customerService: CustomerService,
+        private val billingService: BillingService
 ) : Runnable {
 
     override fun run() {
@@ -29,19 +30,19 @@ class AntaeusRest(
 
     // Set up Javalin rest app
     private val app = Javalin
-        .create()
-        .apply {
-            // InvoiceNotFoundException: return 404 HTTP status code
-            exception(EntityNotFoundException::class.java) { _, ctx ->
-                ctx.status(404)
+            .create()
+            .apply {
+                // InvoiceNotFoundException: return 404 HTTP status code
+                exception(EntityNotFoundException::class.java) { _, ctx ->
+                    ctx.status(404)
+                }
+                // Unexpected exception: return HTTP 500
+                exception(Exception::class.java) { e, _ ->
+                    logger.error(e) { "Internal server error" }
+                }
+                // On 404: return message
+                error(404) { ctx -> ctx.json("not found") }
             }
-            // Unexpected exception: return HTTP 500
-            exception(Exception::class.java) { e, _ ->
-                logger.error(e) { "Internal server error" }
-            }
-            // On 404: return message
-            error(404) { ctx -> ctx.json("not found") }
-        }
 
     init {
         // Set up URL endpoints for the rest app
@@ -87,6 +88,12 @@ class AntaeusRest(
                         }
                     }
 
+                    path("billings") {
+                        // POST URL: /rest/v1/billings
+                        post {
+                            it.json(billingService.chargePendingInvoices())
+                        }
+                    }
                 }
             }
         }
