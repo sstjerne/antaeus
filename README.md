@@ -91,7 +91,7 @@ Happy hacking 😁!
 ## Step by Step (https://www.youtube.com/watch?v=ay6GjmiJTPM)
 ### Step 1
 - Spend time reading documentation about the Kotlin language. I base myself on the guides offered by the official site https://kotlinlang.org/.
-  Also informing me of the differences and similarities with other languages.
+- Also informing me of the differences and similarities with other languages.
   
 ### Step 2
 1. Download & Install IntelliJ Idea Community
@@ -106,9 +106,35 @@ As first interaction with the code, I added/implemented a simple new REST API se
 ### Step 4 - Design (https://www.youtube.com/watch?v=Ra7oqFqj9uU)
 My decision is to introduce the change in the simplest way, minimizing code changes, given my little experience in Kotlin, and also in the time available (time to allocate given the current job).
 As assumption, I assumed that scalability is an attribute not functional that is required.
-Beside as the application is a REST API, I decided to use an external cron and expose a service that trigger the pending invoice payment, with that two tactics I will support a scheduler feature. The mainly reason is external cron offer us to mantain externally the configuration/execution of that, and also it avoids to have a  mechanisc when multiples instances(applications) trying to execute. Also expose this service as a REST API allow to execute when we believe that is best time, or well in case that all applications work behind a Load Balancer, the Load Balancer decided who takes the instance that minor CPUUtilization contain or well another metrics.
+Beside as the application is a REST API, I decided to use an external cron and expose a service that trigger the pending invoice payment, with that two tactics I will support a scheduler feature. The mainly reason is external cron offer us to mantain externally as singleton for configurating/executing, and also it avoids to have a  mechanisc when multiples instances of application run simultaneously trying to execute. Also expose this service as a REST API allow to execute when we believe that is best time, or well in case that all applications work behind a Load Balancer, the Load Balancer decided who takes the instance that minor CPUUtilization contain or well another metrics.
 
+### Step 5 - Implementation
+Changes in code base -  branch `feature/sstjerne/schedule_billing_service`.
 
+#### API Endpoint
+
+A new API endpoint `/billing` was create 
+
+###### Usage
+
+`_POST /rest/v1/billing`
+
+###### Testing
+
+Unit tests were added for `BillingService` and `InvoiceService`.
+
+### Step 6 - Execution
+Simple expression line to add as command in a crontabs tool to execute
+
+`0 0 1 * * curl -X POST -d '{}' INSTANCE_DOMAIN/rest/v1/billings`
+
+### Step 7 - Improvements
+* Authentication and authorization
+* Add more validation.
+* Enhance exception mapping.
+* Enhance API responses.
+* Metrics
+* Improve and add more Unit Test.
 
 
 
