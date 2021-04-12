@@ -6,10 +6,13 @@ package io.pleo.antaeus.rest
 
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder.get
+import io.javalin.apibuilder.ApiBuilder.post
 import io.javalin.apibuilder.ApiBuilder.path
 import io.pleo.antaeus.core.exceptions.EntityNotFoundException
+import io.pleo.antaeus.core.services.BillingService
 import io.pleo.antaeus.core.services.CustomerService
 import io.pleo.antaeus.core.services.InvoiceService
+import io.pleo.antaeus.models.InvoiceStatus
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -17,7 +20,7 @@ private val thisFile: () -> Unit = {}
 
 class AntaeusRest(
     private val invoiceService: InvoiceService,
-    private val customerService: CustomerService
+    private val customerService: CustomerService,
 ) : Runnable {
 
     override fun run() {
@@ -56,9 +59,14 @@ class AntaeusRest(
                 // V1
                 path("v1") {
                     path("invoices") {
-                        // URL: /rest/v1/invoices
+                        // URL: /rest/v1/invoices?status=[pending|paid]
                         get {
-                            it.json(invoiceService.fetchAll())
+                            var status = it.queryParam("status").orEmpty();
+                            if (enumContains<InvoiceStatus>(status)){
+                                it.json(invoiceService.fetchInvoicesByStatus(InvoiceStatus.valueOf(status)))
+                            } else {
+                                it.json(invoiceService.fetchAll())
+                            }
                         }
 
                         // URL: /rest/v1/invoices/{:id}
@@ -78,8 +86,17 @@ class AntaeusRest(
                             it.json(customerService.fetch(it.pathParam("id").toInt()))
                         }
                     }
+
                 }
             }
         }
+    }
+
+    /**
+     * Returns `true` if enum T contains an entry with the specified name.
+     */
+    inline fun <reified T : Enum<T>> enumContains(name: String): Boolean {
+        var enumName = name.orEmpty().toUpperCase().toString();
+        return enumValues<T>().any { it.name == enumName}
     }
 }
