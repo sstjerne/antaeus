@@ -89,9 +89,27 @@ Happy hacking 😁!
 
 # Resolution
 ## Step by Step (https://www.youtube.com/watch?v=ay6GjmiJTPM)
-###Apr 5
-
+### Step 1
+- Spend time reading documentation about the Kotlin language. I base myself on the guides offered by the official site https://kotlinlang.org/.
+  Also informing me of the differences and similarities with other languages.
+  
+### Step 2
 1. Download & Install IntelliJ Idea Community
-2. Fork Project
+2. Fork Project Antaeus
 3. Open & Run project
 4. Play with REST API
+
+### Step 3
+Time to spend in check the current implementation, and as a first iteration get draft design/implementation for solution.
+As first interaction with the code, I added/implemented a simple new REST API service just a PoC, and try to invoke and verify that everything works.
+
+### Step 4 - Design (https://www.youtube.com/watch?v=Ra7oqFqj9uU)
+My decision is to introduce the change in the simplest way, minimizing code changes, given my little experience in Kotlin, and also in the time available (time to allocate given the current job).
+As assumption, I assumed that scalability is an attribute not functional that is required.
+Beside as the application is a REST API, I decided to use an external cron and expose a service that trigger the pending invoice payment, with that two tactics I will support a scheduler feature. The mainly reason is external cron offer us to mantain externally the configuration/execution of that, and also it avoids to have a  mechanisc when multiples instances(applications) trying to execute. Also expose this service as a REST API allow to execute when we believe that is best time, or well in case that all applications work behind a Load Balancer, the Load Balancer decided who takes the instance that minor CPUUtilization contain or well another metrics.
+
+
+
+
+
+
